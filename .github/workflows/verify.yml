@@ -1,0 +1,36 @@
+name: Verify Pipeline
+
+on:
+  # Trigger the verification workflow on push or pull request, for the main branch.
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  verify-pipeline:
+    name: Verify Pipeline Job
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21.3
+
+      - name: Verify dependencies
+        run: go mod verify
+
+      - name: Download dependencies
+        run: go get ./...
+
+      - name: Run go vet
+        run: go vet ./...
+
+      - name: Run Unit Tests
+        run: go test -race -vet=off ./...
