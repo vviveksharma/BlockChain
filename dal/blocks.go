@@ -14,11 +14,17 @@ type Block interface {
 	Create(*models.DbBlock) error
 	FindAll() ([]*models.DbBlock, error)
 	PreviousHash() (string, error)
+	FindByName(conditions *models.DbBlock) (*models.DbBlock, error)
 }
 
 type BlockImp struct{}
 
 func (dal *BlockImp) Create(value *models.DbBlock) error {
+	db, err := db.NewDbRequest()
+	if err != nil {
+		log.Println("error in creating a DB request")
+		return nil
+	}
 	dbConn, err := db.InitDB()
 	if err != nil {
 		return err
@@ -37,6 +43,11 @@ func (dal *BlockImp) Create(value *models.DbBlock) error {
 }
 
 func (dal *BlockImp) FindAll() ([]*models.DbBlock, error) {
+	db, err := db.NewDbRequest()
+	if err != nil {
+		log.Println("error in creating a DB request")
+		return nil, err
+	}
 	dbConn, err := db.InitDB()
 	if err != nil {
 		return nil, err
@@ -56,6 +67,11 @@ func (dal *BlockImp) FindAll() ([]*models.DbBlock, error) {
 }
 
 func (dal *BlockImp) PreviousHash() (string, error) {
+	db, err := db.NewDbRequest()
+	if err != nil {
+		log.Println("error in creating a DB request")
+		return "", err
+	}
 	dbConn, err := db.InitDB()
 	if err != nil {
 		return "", err
@@ -65,9 +81,35 @@ func (dal *BlockImp) PreviousHash() (string, error) {
 		return "", transaction.Error
 	}
 	defer transaction.Rollback()
-	var response string
-	if err := transaction.Model(&models.DbBlock{}).Order("id desc").Limit(1).Pluck("hash", &response).Error; err != nil {
-		log.Fatal("the error in the calling the model", err)
+	var resp models.DbBlock
+	err = transaction.Model(&models.DbBlock{}).Order("hash DESC").Limit(1).Find(&resp).Error
+	if err != nil {
+		return "", err
 	}
+	transaction.Commit()
+	return resp.Hash, nil
+}
+
+func (dal *BlockImp) FindByName(conditions *models.DbBlock) (*models.DbBlock, error) {
+	db, err := db.NewDbRequest()
+	if err != nil {
+		log.Println("error in creating a DB request")
+		return nil, err
+	}
+	dbConn, err := db.InitDB()
+	if err != nil {
+		return nil, err
+	}
+	transaction := dbConn.Begin()
+	if transaction.Error != nil {
+		return nil, transaction.Error
+	}
+	defer transaction.Rollback()
+	var response *models.DbBlock
+	resp := transaction.Last(&response, conditions)
+	if resp.Error != nil {
+		return nil, resp.Error
+	}
+	transaction.Commit()
 	return response, nil
 }

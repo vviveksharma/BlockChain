@@ -9,7 +9,19 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-func InitDB() (*gorm.DB, error) {
+type IDataBaseService interface {
+	InitDB() (*gorm.DB, error)
+}
+
+type DataBaseService struct {
+	Db *gorm.DB
+}
+
+func NewDbRequest() (IDataBaseService, error) {
+	return &DataBaseService{}, nil
+}
+
+func (db *DataBaseService) InitDB() (*gorm.DB, error) {
 	comman.Getenv()
 	dsn := os.Getenv("DSN")
 	var err error

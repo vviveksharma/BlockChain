@@ -11,4 +11,5 @@ func Routes(app *fiber.App, h *handlers.Handler) {
 		return c.SendString("Block Chain Server is Up and Running")
 	})
 	app.Post("/addBlock", h.AddBlock)
+	app.Post("/findBlock", h.FindBlock)
 }
