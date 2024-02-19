@@ -20,6 +20,10 @@ func main() {
 	done := make(chan struct{})
 	go func() {
 		time.Sleep(5 * time.Second)
+		db, err  := db.NewDbRequest()
+		if err != nil {
+			log.Fatal("error in creating a DB request")
+		}
 		resp, err := db.InitDB()
 		if err != nil {
 			log.Println("error in starting the DataBase: ", err)
