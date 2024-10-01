@@ -12,4 +12,6 @@ func Routes(app *fiber.App, h *handlers.Handler) {
 	})
 	app.Post("/addBlock", h.AddBlock)
 	app.Post("/findBlock", h.FindBlock)
+	app.Get("/getBlocks", h.PrintBlockChain)
+	app.Post("/deserlizeBlock", h.DeserilizeData)
 }

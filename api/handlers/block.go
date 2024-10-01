@@ -69,3 +69,34 @@ func (h *Handler) FindBlock(c *fiber.Ctx) error {
 	}
 	return c.JSON(comman.Success(resp))
 }
+
+func (h *Handler) PrintBlockChain(c *fiber.Ctx) error {
+	resp, err := h.BlockService.PrintBlockChain()
+	if err != nil {
+		log.Println("error from the service file :" + err.Error())
+		return c.Status(fiber.ErrBadRequest.Code).JSON(comman.Failed(&fiber.Error{
+			Code:    fiber.ErrInternalServerError.Code,
+			Message: errors.New("error while executing the service").Error() + err.Error(),
+		}))
+	}
+	log.Println(resp)
+	return c.JSON(comman.Success(resp))
+}
+
+func (h *Handler) DeserilizeData(c *fiber.Ctx) error {
+	var requestBody *models.DeserilizeDataRequest
+	err := c.BodyParser(&requestBody)
+	if err != nil {
+		log.Println("Error in parsing the request Body")
+		return c.Status(fiber.StatusBadGateway).JSON(errors.New("error while parsing the request Body"))
+	}
+	if requestBody.Data == "" {
+		log.Println("Error in checking the lenght of request")
+		return c.Status(fiber.ErrBadRequest.Code).JSON(comman.Failed(&fiber.Error{
+			Code:    fiber.StatusBadRequest,
+			Message: errors.New("data field can't be empty").Error(),
+		}))
+	}
+	resp := h.BlockService.DeserilizeData(requestBody)
+	return c.JSON(comman.Success(resp))
+}

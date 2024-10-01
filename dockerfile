@@ -29,7 +29,7 @@ COPY --from=builder /app/Makefile ./Makefile
 # Set environment variables
 ENV DATABASE_URL "postgres://postgres:password@db:5432/mydatabase?sslmode=disable"
 # Expose port 8000 for the Golang application
-EXPOSE 8000
+EXPOSE 3000
 
 VOLUME /app/data
 

@@ -5,6 +5,7 @@ import (
 	"blockChain/models"
 	"errors"
 	"log"
+	"time"
 )
 
 func (bs *Blocks) SetupDalInstance() error {
@@ -23,10 +24,11 @@ func (bl *Blocks) CreateBlock(data string, prevHash string) (*models.DbBlock, er
 		return nil, err
 	}
 	block := &models.DbBlock{
-		PrevHash: prevHash,
-		Data:     []byte(data),
-		Hash:     prevHash,
-		Nonce:    0,
+		PrevHash:   prevHash,
+		Created_At: time.Now(),
+		Data:       []byte(data),
+		Hash:       prevHash,
+		Nonce:      0,
 	}
 	minedBlock, err := MineBlock(block, 4)
 	if err != nil {
