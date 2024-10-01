@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"log"
 	"strconv"
 )
 
@@ -51,7 +52,8 @@ func DeserilizeData(s string) string {
 	var response string
 	_, err := fmt.Sscanf(s, "%x", &response)
 	if err != nil {
-		fmt.Println("Error reverting:", err)
+		log.Println("Error reverting:", err)
+		return err.Error()
 	}
 	return response
 }

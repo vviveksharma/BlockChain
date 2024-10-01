@@ -7,5 +7,20 @@ type AddBlockRespose struct {
 }
 
 type FindBlockResponse struct {
-	Response bool `json:"response"`
+	Response    bool    `json:"response"`
+	BlockResult DbBlock `json:"blockResult"`
+}
+
+type BlockChain struct {
+	PrevHash string `json:"prev_hash"`
+	Data     string `json:"data"`
+	Hash     string `json:"hash"`
+}
+
+type PrintBlockChainResponseBody struct {
+	BlockChain []*BlockChain `json:"blockChain"`
+}
+
+type DeserilizeDataResponse struct {
+	Data string `json:"data"`
 }

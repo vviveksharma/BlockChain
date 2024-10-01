@@ -14,7 +14,7 @@ type Block interface {
 	Create(*models.DbBlock) error
 	FindAll() ([]*models.DbBlock, error)
 	PreviousHash() (string, error)
-	FindByName(conditions *models.DbBlock) (*models.DbBlock, error)
+	FindBy(conditions *models.DbBlock) (*models.DbBlock, error)
 }
 
 type BlockImp struct{}
@@ -82,7 +82,7 @@ func (dal *BlockImp) PreviousHash() (string, error) {
 	}
 	defer transaction.Rollback()
 	var resp models.DbBlock
-	err = transaction.Model(&models.DbBlock{}).Order("hash DESC").Limit(1).Find(&resp).Error
+	err = transaction.Model(&models.DbBlock{}).Order("created_at DESC").Limit(1).Find(&resp).Error
 	if err != nil {
 		return "", err
 	}
@@ -90,7 +90,7 @@ func (dal *BlockImp) PreviousHash() (string, error) {
 	return resp.Hash, nil
 }
 
-func (dal *BlockImp) FindByName(conditions *models.DbBlock) (*models.DbBlock, error) {
+func (dal *BlockImp) FindBy(conditions *models.DbBlock) (*models.DbBlock, error) {
 	db, err := db.NewDbRequest()
 	if err != nil {
 		log.Println("error in creating a DB request")
